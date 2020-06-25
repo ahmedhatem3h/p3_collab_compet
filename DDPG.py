@@ -142,11 +142,11 @@ class Agent():
         state = torch.from_numpy(state).float().to(device)
         self.actor_local.eval()
         with torch.no_grad():
-            action = self.actor_local(state)
+            action = self.actor_local(state).cpu().data.numpy()
         self.actor_local.train()
         if add_noise:
             action += (noise * self.noise.sample())
-        return torch.clamp(action, -1, 1)
+        return np.clip(action, -1, 1)
 
     def local_act(self, state, add_noise=False):
         """Returns actions without noise for given states as per current policy."""
@@ -154,7 +154,7 @@ class Agent():
         state = torch.FloatTensor(state).to(device)
         self.actor_local.eval()
         with torch.no_grad():
-            action = self.actor_local(state).numpy()
+            action = self.actor_local(state).cpu().numpy()
         self.actor_local.train()
 
         return action
@@ -165,7 +165,7 @@ class Agent():
         state = torch.FloatTensor(state).to(device)
         self.actor_local.eval()
         with torch.no_grad():
-            action = self.actor_target(state).numpy()
+            action = self.actor_target(state).cpu().numpy()
         self.actor_local.train()
         return action
 
